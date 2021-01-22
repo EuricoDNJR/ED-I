@@ -89,12 +89,12 @@ void cadastra_docente(Docente *d, int *qtd_docentes, int *qtd_pessoas, char *nom
 }
 
 void mostra_docentes(Docente *doc,int *qtd_docentes){
-        printf("Entrol no mostrar docente\n");
         int i;
-        printf("Doscentes disponiveis:\n");
+        printf("\nDoscentes disponiveis:\n");
         for(i = 0; i < *qtd_docentes; i++){
             printf("Id do docente: %d, Nome do docente: %s\n",doc[i].info_docente.ID,doc[i].info_docente.nome);
         }
+        printf("\n");
 }
 
 int _orientador_existe(int num_orientador, Docente *doc, int *qtd_docentes)
@@ -102,7 +102,7 @@ int _orientador_existe(int num_orientador, Docente *doc, int *qtd_docentes)
     printf("Entrou no existe docente\n");
         int i;
         int flag = 0;
-        for(i = 0; i < *qtd_docentes; i++){
+        for(i = 0; i < *qtd_docentes + 1; i++){
             if(doc[i].info_docente.ID == doc[num_orientador].info_docente.ID)
             {
                 flag = 1;
@@ -127,7 +127,7 @@ void cadastrar_discente(Discente *d, Docente *doc, int *qtd_discentes, int *qtd_
     d[*qtd_discentes].senha = senha;
     
     *qtd_discentes += 1;
-    /*
+    
     while(1)
     {
         mostra_docentes(doc,qtd_docentes);
@@ -149,7 +149,7 @@ void cadastrar_discente(Discente *d, Docente *doc, int *qtd_discentes, int *qtd_
     while(1)
     {
         mostra_docentes(doc,qtd_docentes);
-        printf("Informe o ID do seu Orientador (0 = sem coorientador):\n");
+        printf("Informe o ID do seu Coorientador (0 = sem coorientador):\n");
         scanf("%d", &num_Coorientador);
         if(num_orientador == 0)
         {
@@ -164,7 +164,7 @@ void cadastrar_discente(Discente *d, Docente *doc, int *qtd_discentes, int *qtd_
             printf("Numero de Coorientador Invalido!!!\n");
         }
     }
-    */
+    
 }
 
 
@@ -205,19 +205,19 @@ void _mostrar_teste_discente(Discente *d)
     printf("Matricula: %d\n",d[0].info_discente.matricula);
     
     //nivel
-    printf("Quantidade de orientados da graduacao: %d\n",d[0].nivel);
+    printf("Nivel do discente: %d\n",d[0].nivel);
 
     //nome_curso
-    printf("Quantidade de orientados da pos: %s\n",d[0].nome_curso);
+    printf("Nome do curso do discente: %s\n",d[0].nome_curso);
 
     //senha
-    printf("Quantidade de orientados da pos: %d\n",d[0].senha);
+    printf("Senha do discente: %d\n",d[0].senha);
 
     //ID_orientador
-    printf("Quantidade de orientados da pos: %d\n",d[0].ID_orientador);
+    printf("Id do orientador do discente: %d\n",d[0].ID_orientador);
 
     //ID_coorientador
-    printf("Quantidade de orientados da pos: %d\n",d[0].ID_coorientador);
+    printf("Id do Coorientador do discente: %d\n",d[0].ID_coorientador);
 
     
 }
