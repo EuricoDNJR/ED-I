@@ -19,7 +19,6 @@ int main(){
     _mostrar_teste_docente(d);
 
     qnt_p += 1;
-    //qnt_di += 1;
     cadastrar_discente(di, d, &qnt_di, &qnt_do, &qnt_p, nome, 18, 1, nome, 123);
     _mostrar_teste_discente(di);
 
