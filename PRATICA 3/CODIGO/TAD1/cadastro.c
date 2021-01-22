@@ -193,31 +193,31 @@ void _mostrar_teste_docente(Docente *d)
 void _mostrar_teste_discente(Discente *d)
 {
     //nome
-    printf("nome: %s\n",d->info_discente.nome);
+    printf("nome: %s\n",d[0].info_discente.nome);
     
     //idade
-    printf("Idade: %d\n",d->info_discente.idade);
+    printf("Idade: %d\n",d[0].info_discente.idade);
     
     //ID
-    printf("ID: %d\n",d->info_discente.ID);
+    printf("ID: %d\n",d[0].info_discente.ID);
     
     //matricula
-    printf("Matricula: %d\n",d->info_discente.matricula);
+    printf("Matricula: %d\n",d[0].info_discente.matricula);
     
     //nivel
-    printf("Quantidade de orientados da graduacao: %d\n",d->nivel);
+    printf("Quantidade de orientados da graduacao: %d\n",d[0].nivel);
 
     //nome_curso
-    printf("Quantidade de orientados da pos: %s\n",d->nome_curso);
+    printf("Quantidade de orientados da pos: %s\n",d[0].nome_curso);
 
     //senha
-    printf("Quantidade de orientados da pos: %d\n",d->senha);
+    printf("Quantidade de orientados da pos: %d\n",d[0].senha);
 
     //ID_orientador
-    printf("Quantidade de orientados da pos: %d\n",d->ID_orientador);
+    printf("Quantidade de orientados da pos: %d\n",d[0].ID_orientador);
 
     //ID_coorientador
-    printf("Quantidade de orientados da pos: %d\n",d->ID_coorientador);
+    printf("Quantidade de orientados da pos: %d\n",d[0].ID_coorientador);
 
     
 }
