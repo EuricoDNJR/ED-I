@@ -15,12 +15,11 @@ int main(){
     char nome[] = {'c', 'a', 'r', 'l', 'o', 's'};
 
     qnt_p += 1;
-
     cadastra_docente(d, &qnt_do, &qnt_p, nome, 30, 0, 0);
     _mostrar_teste_docente(d);
 
-
-    qnt_di += 1;
+    qnt_p += 1;
+    //qnt_di += 1;
     cadastrar_discente(di, d, &qnt_di, &qnt_do, &qnt_p, nome, 18, 1, nome, 123);
     _mostrar_teste_discente(di);
 

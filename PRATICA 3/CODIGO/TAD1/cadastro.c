@@ -98,6 +98,20 @@ int _orientador_existe(int num_orientador, Docente *doc, int *qtd_docentes)
         }
         return flag;
 }
+/*AQUI A FUNÇÃO JEAN*/
+void _copia_string( char *str_dest, char *str_orig ){
+
+	int i=0;
+
+	str_dest = (char *)malloc( sizeof(char) );
+
+	while( (str_dest[i] = str_orig[i]) ){
+		i++;
+		str_dest = (char *)realloc( str_dest, sizeof(char) * (i + 1) );
+	}
+
+}
+/**/
 
 void cadastrar_discente(Discente *d, Docente *doc, int *qtd_discentes, int *qtd_docentes, int *qtd_pessoas, char *nome, int idade, int nivel, char *nome_curso, int senha)
 {
@@ -106,21 +120,32 @@ void cadastrar_discente(Discente *d, Docente *doc, int *qtd_discentes, int *qtd_
     
     d = (Discente *)realloc(d, (*qtd_discentes) * sizeof(Discente));
     
-    strcpy(d[*qtd_discentes - 1].info_discente.nome, nome);
+
+    //printf("%s\n",d[*qtd_discentes /*- 1*/].info_discente.nome);
+    _copia_string(d[*qtd_discentes /*- 1*/].info_discente.nome, nome);
+    //strcpy( d[*qtd_discentes /*- 1*/].info_discente.nome, nome);
     printf("Entrol no cadastra dicente\n");
+    //printf("%s\n",d[*qtd_discentes /*- 1*/].info_discente.nome);
     
-    d[*qtd_discentes - 1].info_discente.idade = idade;
-    d[*qtd_discentes - 1].info_discente.ID =  *qtd_pessoas;
-    d[*qtd_discentes - 1].info_discente.matricula =  *qtd_discentes;
-    d[*qtd_discentes - 1].nivel = nivel;
-    strcpy(d[*qtd_discentes - 1].nome_curso, nome_curso);
-    d[*qtd_discentes - 1].senha = senha;
+
+    d[*qtd_discentes /*- 1*/].info_discente.idade = idade;
+    d[*qtd_discentes /*- 1*/].info_discente.ID =  *qtd_pessoas;
+    d[*qtd_discentes /*- 1*/].info_discente.matricula =  *qtd_discentes;
+    d[*qtd_discentes /*- 1*/].nivel = nivel;
+    strcpy(d[*qtd_discentes /*- 1*/].nome_curso, nome_curso);
+    d[*qtd_discentes /*- 1*/].senha = senha;
     
+
+
     while(1)
     {
         mostra_docentes(doc,qtd_docentes);
-        printf("Informe o ID do seu Orientador:\n");
+        printf("Informe o ID do seu Orientador(0 = sem orientador):\n");
         scanf("%d", &num_orientador);
+        if(num_orientador == 0)
+        {
+            break;
+        }
         if(_orientador_existe(num_orientador,doc,qtd_docentes))//orientador existe 
         {
             d[*qtd_discentes - 1].ID_orientador = num_orientador;
@@ -133,8 +158,12 @@ void cadastrar_discente(Discente *d, Docente *doc, int *qtd_discentes, int *qtd_
     while(1)
     {
         mostra_docentes(doc,qtd_docentes);
-        printf("Informe o ID do seu Orientador:\n");
+        printf("Informe o ID do seu Orientador (0 = sem coorientador):\n");
         scanf("%d", &num_Coorientador);
+        if(num_orientador == 0)
+        {
+            break;
+        }
         if(_orientador_existe(num_Coorientador,doc,qtd_docentes)&&num_Coorientador != num_orientador)//orientador existe 
         {
             d[*qtd_discentes - 1].ID_coorientador = num_Coorientador;
