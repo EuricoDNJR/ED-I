@@ -43,8 +43,8 @@ Docente* criar_docente()
 {
     //printf("Entrol no criar docente\n");
     Docente *d;
-    d = (Docente*)malloc(sizeof(Docente));
-    d = NULL;
+    d = (Docente *)malloc(sizeof(Docente));
+
     return d;
 }
 
@@ -53,8 +53,8 @@ Discente* criar_discente()
 {
     //printf("Entrol no criar dicente\n");
     Discente *d;
-    d = (Discente*)malloc(sizeof(Discente));
-    d = NULL;
+    d = (Discente *)malloc(sizeof(Discente));
+
     return d;
 }
 
@@ -62,15 +62,18 @@ Discente* criar_discente()
 void cadastra_docente(Docente *d, int *qtd_docentes, int *qtd_pessoas, char *nome, int idade, int qtd_orientecoes_graduacao, int qtd_orientecoes_pos_graduacao)
 {
     //printf("Entrol no cadastrar docente\n");
+
+    d = (Docente*)realloc(d, sizeof(Docente) * ( (*qtd_docentes)  + 1));
+
+    strcpy(d[*qtd_docentes].info_docente.nome, nome);
+    d[*qtd_docentes].info_docente.idade = idade;
+    d[*qtd_docentes].info_docente.ID =  *qtd_pessoas; 
     
-    d = (Docente*)realloc(d, sizeof(Docente) * (* qtd_docentes));
-    strcpy(d[*qtd_docentes - 1].info_docente.nome, nome);
-    d[*qtd_docentes - 1].info_docente.idade = idade;
-    d[*qtd_docentes - 1].info_docente.ID =  *qtd_pessoas; 
-    
-    d[*qtd_docentes - 1].info_docente.matricula = *qtd_docentes;
-    d[*qtd_docentes - 1].qtd_orientacoes_graduacao = 0;
-    d[*qtd_docentes - 1].qtd_orientacoes_pos_graduacao = 0;
+    d[*qtd_docentes].info_docente.matricula = *qtd_docentes;
+    d[*qtd_docentes].qtd_orientacoes_graduacao = 0;
+    d[*qtd_docentes].qtd_orientacoes_pos_graduacao = 0;
+
+    *qtd_docentes += 1;
 }
 
 void mostra_docentes(Docente *doc,int *qtd_docentes){
@@ -101,9 +104,10 @@ void cadastrar_discente(Discente *d, Docente *doc, int *qtd_discentes, int *qtd_
     
     int num_orientador = 0, num_Coorientador = 0;
     
-    d = (Discente*)realloc(d, (*qtd_discentes)*sizeof(Discente));
-    printf("Entrol no cadastra dicente\n");
+    d = (Discente *)realloc(d, (*qtd_discentes) * sizeof(Discente));
+    
     strcpy(d[*qtd_discentes - 1].info_discente.nome, nome);
+    printf("Entrol no cadastra dicente\n");
     
     d[*qtd_discentes - 1].info_discente.idade = idade;
     d[*qtd_discentes - 1].info_discente.ID =  *qtd_pessoas;
@@ -142,25 +146,26 @@ void cadastrar_discente(Discente *d, Docente *doc, int *qtd_discentes, int *qtd_
     }
 }
 
+
 void _mostrar_teste_docente(Docente *d)
 {
     //nome
-    printf("nome: %s\n",d->info_docente.nome);
+    printf("nome: %s\n",d[0].info_docente.nome);
     
     //idade
-    printf("Idade: %d\n",d->info_docente.idade);
+    printf("Idade: %d\n",d[0].info_docente.idade);
     
     //ID
-    printf("ID: %d\n",d->info_docente.ID);
+    printf("ID: %d\n",d[0].info_docente.ID);
     
     //matricula
-    printf("Matricula: %d\n",d->info_docente.matricula);
+    printf("Matricula: %d\n",d[0].info_docente.matricula);
     
     //qtd_orientacoes_graduacao
-    printf("Quantidade de orientados da graduacao: %d\n",d->qtd_orientacoes_graduacao);
+    printf("Quantidade de orientados da graduacao: %d\n",d[0].qtd_orientacoes_graduacao);
 
     //qnt_orientacoes_pos_graduacao
-    printf("Quantidade de orientados da pos: %d\n",d->qtd_orientacoes_pos_graduacao);
+    printf("Quantidade de orientados da pos: %d\n",d[0].qtd_orientacoes_pos_graduacao);
     
 }
 
@@ -182,7 +187,7 @@ void _mostrar_teste_discente(Discente *d)
     printf("Quantidade de orientados da graduacao: %d\n",d->nivel);
 
     //nome_curso
-    printf("Quantidade de orientados da pos: %d\n",d->nome_curso);
+    printf("Quantidade de orientados da pos: %s\n",d->nome_curso);
 
     //senha
     printf("Quantidade de orientados da pos: %d\n",d->senha);

@@ -10,13 +10,12 @@ int main(){
     int qnt_do = 0;
     int qnt_di = 0;
 
-
     d = criar_docente();
     di = criar_discente();
     char nome[] = {'c', 'a', 'r', 'l', 'o', 's'};
 
     qnt_p += 1;
-    qnt_do += 1;
+
     cadastra_docente(d, &qnt_do, &qnt_p, nome, 30, 0, 0);
     _mostrar_teste_docente(d);
 
