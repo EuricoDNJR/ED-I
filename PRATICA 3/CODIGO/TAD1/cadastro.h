@@ -1,38 +1,52 @@
-//*Um orientador pode orientar até 10 alunos, sendo, 40% de graduação e 60% a 
-//nível de pós-graduação (mestrado e doutorado)
-
 #ifndef cadastro_h
 #define cadastro_h
+
 
 typedef struct pessoa Pessoa;
 typedef struct docente Docente;
 typedef struct discente Discente;
+typedef struct listaDocente ListaDocente;
+typedef	struct listaDiscente ListaDiscente;
+
+char *ler_string();
+
+//PESSOA
+void criar_pessoa( Pessoa *p, int id );
+void mostrar_pessoa( Pessoa p );
+void liberar_pessoa( Pessoa *p );
+
+//DOCENTE
+Docente *criar_docente();
+void mostrar_docente( Docente *d );
+void liberar_docente( Docente *d );
+
+//DISCENTE
+Discente *criar_discente();
+void mostrar_discente( Discente *d );
+void liberar_discente( Discente *d );
+
+//LISTA DOCENTE
+ListaDocente *criar_listaDocente();
+ListaDocente *cadastrar_docente(ListaDocente *l);
+Docente *buscar_docente( ListaDocente *l, int id );
+ListaDocente *remover_docente( ListaDocente *l, int id );
+void mostrar_listaDocente( ListaDocente *l );
+void liberar_listaDocente( ListaDocente *l );
+
+//LISTA DISCENTE
+ListaDiscente *criar_listaDiscente();
+ListaDiscente *cadastrar_discente(ListaDiscente *l);
+Discente *buscar_discente( ListaDiscente *l, int id );
+ListaDiscente *remover_discente( ListaDiscente *l, int id );
+void mostrar_listaDiscente( ListaDiscente *l );
+void liberar_listaDiscente( ListaDiscente *l );
 
 
+//FUNÇÕES ADICIONAIS
+void alunos_de_um_orientador( ListaDiscente *l, int id_orientador );
+void alunos_sem_orientador( ListaDiscente *l );
+void mudar_orientador_de_um_aluno( ListaDocente *ldo, Discente *d, int id_orientador_novo );
+int menu( ListaDocente **ldo, ListaDiscente **ldi );
 
-/*
-cadastrar, 
-remover, 
-altarar, 
-buscar e 
-mostrar)
-
-listar alunos de um determinado orientador; 
-listar alunos que não possuem orientador; 
-mudar orientador de um determinado aluno
-
-*/
-
-//Criando documento
-Docente* criar_docente();
-Discente* criar_discente();
-
-//Cadastrando docente
-void cadastra_docente(Docente *d, int *qtd_docentes, int *qtd_pessoas, char *nome, int idade, int qtd_orientecoes_graduacao, int qtd_orientecoes_pos_graduacao);
-void cadastrar_discente(Discente *d, Docente *doc, int *qtd_discentes, int *qtd_docentes, int *qtd_pessoas, char *nome, int idade, int nivel, char *nome_curso, int senha);
-int _orientador_existe(int num_orientador, Docente *doc, int *qtd_docentes);
-void mostra_docentes(Docente *doc,int *qtd_docentes); 
-void _mostrar_teste_docente(Docente *d);
-void _mostrar_teste_discente(Discente *d);
-
-#endif /* cadastro.h */
+ 
+#endif

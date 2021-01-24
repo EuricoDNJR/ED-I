@@ -1,10 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-
 #include "cadastro.h"
 
 
+int id_docente = 0,
+	id_discente = 0;
+
+
+//STRUCTS
 struct pessoa{
     char *nome;
     int idade; 
@@ -14,224 +17,598 @@ struct pessoa{
 
 struct docente{
     Pessoa info_docente;
-    int qtd_orientacoes_graduacao; 
-    int qtd_orientacoes_pos_graduacao;
+    int qtd_orientacoes_graduacao;
+    int qtd_orientacoes_pos_graduacao; 
 };
 
 struct discente{
     Pessoa info_discente;
     int nivel;// 1- graduacao ou 2 - posgraduacao
     char *nome_curso;
-    int senha; 
-    int ID_orientador; 
+    int senha;
+    int ID_orientador;
     int ID_coorientador;
 };
 
-char *copia_string( char *str_orig ){
+struct listaDocente{
 
+	Docente *docente;
+	struct listaDocente *prox;
+
+};
+
+struct listaDiscente{
+
+	Discente *discente;
+	struct listaDiscente *prox;
+
+};
+
+
+//FUNÇÕES
+char *ler_string(){
+
+	char *s = (char *)malloc( sizeof(char) );
 	int i=0;
-	char *str_dest = (char *)malloc( sizeof(char) );
 
-	while( (str_dest[i] = str_orig[i]) ){
+	while( ( s[i] = getchar() ) != '\n' ){
 		i++;
-		str_dest = (char *)realloc( str_dest, sizeof(char) * (i + 1) );
+		s = (char *)realloc( s, sizeof(char) * (i+1) );
+	}
+	s[i] = 0;
+
+	return s;
+
+}
+
+
+//PESSOA
+void criar_pessoa( Pessoa *p, int id ){
+
+	setbuf( stdin, NULL );
+
+	printf("Nome: ");
+	p->nome = ler_string();
+	printf("Idade "); scanf("%d", &p->idade);
+	p->ID = id;
+	p->matricula = ( id * 10 ) + ( rand() % 10 );
+
+}
+
+void mostrar_pessoa( Pessoa p ){
+
+	printf("Nome: %s\n", p.nome);
+	printf("Idade: %d\n", p.idade);
+	printf("ID: %d\n", p.ID);
+	printf("Matricula: %d\n", p.matricula);
+
+}
+
+void liberar_pessoa( Pessoa *p ){
+
+	free( p->nome );
+
+}
+
+
+//DOCENTE
+Docente *criar_docente(){
+
+	Docente *d = (Docente *)malloc( sizeof(Docente) );
+
+	id_docente++;
+
+	criar_pessoa( &d->info_docente, id_docente );
+	d->qtd_orientacoes_graduacao = 0;
+	d->qtd_orientacoes_pos_graduacao = 0;
+
+	printf("\n");
+
+	return d;
+
+}
+
+void mostrar_docente( Docente *d ){
+
+	if( d ){
+
+		mostrar_pessoa( d->info_docente );
+		printf("Quantidade de orientacoes(Graduacao): %d\n", d->qtd_orientacoes_graduacao);
+		printf("Quantidade de orientacoes(Pos-Graduacao): %d\n", d->qtd_orientacoes_pos_graduacao);
+
+		printf("\n");
+
 	}
 
-	return str_dest;
+}
+
+void liberar_docente( Docente *d ){
+
+	liberar_pessoa( &d->info_docente );
+	free( d );
 
 }
 
-/*
-char *nome;
-    int idade; 
-    int ID;//identificador
-    int matricula;//deve ser gerada automaticamente
-    int qtd_orientacoes_graduacao; 
-    int qtd_orientacoes_pos_graduacao;
-*/
 
+//DISCENTE
+Discente *criar_discente(){
 
-//cadastrar doscente
-Docente* criar_docente()
-{
-    //printf("Entrol no criar docente\n");
-    Docente *d;
-    d = (Docente *)malloc(sizeof(Docente));
+	Discente *d = (Discente *)malloc( sizeof(Discente) );
 
-    return d;
+	id_discente++;
+
+	criar_pessoa( &d->info_discente, id_discente );
+	printf("Nivel: "); scanf("%d", &d->nivel);
+
+	setbuf( stdin, NULL );
+
+	printf("Nome do curso: ");
+	d->nome_curso = ler_string(); 
+    printf("Senha: "); scanf("%d", &d->senha);
+    d->ID_orientador = -1;
+    d->ID_coorientador = -1;
+
+	printf("\n");
+
+	return d;
+
+}
+
+void mostrar_discente( Discente *d ){
+
+	if( d ){
+
+		mostrar_pessoa( d->info_discente );
+		printf("Nivel: %d\n", d->nivel);
+		printf("Nome do curso: %s\n", d->nome_curso);
+		printf("Senha: %d\n", d->senha);
+		printf("Id do orientador: %d\n", d->ID_orientador);
+		printf("Id do co-orientador: %d\n", d->ID_coorientador);
+
+		printf("\n");
+
+	}
+
+}
+
+void liberar_discente( Discente *d ){
+
+	liberar_pessoa( &d->info_discente );
+	free( d->nome_curso );
+	free( d );
+
 }
 
 
-Discente* criar_discente()
-{
-    //printf("Entrol no criar dicente\n");
-    Discente *d;
-    d = (Discente *)malloc(sizeof(Discente));
+//LISTA DOCENTE
+ListaDocente *criar_listaDocente(){
 
-    return d;
+	return NULL;
+
+}
+
+ListaDocente *cadastrar_docente(ListaDocente *l){
+
+	ListaDocente *novo = (ListaDocente *)malloc( sizeof(ListaDocente) ),
+				 *aux = NULL;
+
+	novo->docente = criar_docente();
+	novo->prox = NULL;
+
+	if( l == NULL )
+		return novo;
+	else{
+
+		aux = l;
+		while( aux->prox )
+			aux = aux->prox;
+
+		aux->prox = novo;
+
+	}
+
+	return l;
+
+}
+
+Docente *buscar_docente( ListaDocente *l, int id ){
+
+	while( l ){
+
+		if( l->docente->info_docente.ID == id )
+			return l->docente;
+
+		l = l->prox;
+
+	}
+
+	return NULL;
+
+}
+
+ListaDocente *remover_docente( ListaDocente *l, int id ){
+
+	ListaDocente *aux, *aux2;
+
+	if( l == NULL )
+		return l;
+	if( l->docente->info_docente.ID == id ){
+		if( l->docente->qtd_orientacoes_graduacao + l->docente->qtd_orientacoes_pos_graduacao > 0)
+				printf("Docente com orientandos não pode ser removido\n");
+		else
+			return l->prox;
+	}
+
+	aux = l;
+	while( aux->prox ){
+		if( aux->prox->docente->info_docente.ID == id ){
+			if( aux->prox->docente->qtd_orientacoes_graduacao + aux->prox->docente->qtd_orientacoes_pos_graduacao > 0)
+				printf("Docente com orientandos não pode ser removido\n");
+			else{
+				aux2 = aux->prox;
+				aux->prox = aux->prox->prox;
+				liberar_docente( aux2->docente );	
+				free( aux2 );
+			}
+			break;
+		}
+
+		aux = aux->prox;
+
+	}
+
+	return l;
+
+}
+
+void mostrar_listaDocente( ListaDocente *l ){
+
+	if( l == NULL )
+		printf("Lista vazia\n");
+	else{
+
+		while( l->prox ){
+			mostrar_docente( l->docente );
+			l = l->prox;
+		}
+		mostrar_docente( l->docente );
+
+	}
+
+}
+
+void liberar_listaDocente( ListaDocente *l ){
+
+	ListaDocente *aux;
+
+	while(l){
+
+		aux = l->prox;
+		liberar_docente( l->docente );	
+		free(l);
+		l = aux;
+
+	}
+
 }
 
 
-void cadastra_docente(Docente *d, int *qtd_docentes, int *qtd_pessoas, char *nome, int idade, int qtd_orientecoes_graduacao, int qtd_orientecoes_pos_graduacao)
-{
-    //printf("Entrol no cadastrar docente\n");
+//LISTA DISCENTE
+ListaDiscente *criar_listaDiscente(){
 
-    d = (Docente*)realloc(d, sizeof(Docente) * ( (*qtd_docentes)  + 1));
+	return NULL;
 
-    d[*qtd_docentes].info_docente.nome = copia_string( nome );
-    d[*qtd_docentes].info_docente.idade = idade;
-    d[*qtd_docentes].info_docente.ID =  *qtd_pessoas; 
-    d[*qtd_docentes].info_docente.matricula = *qtd_docentes;
-    d[*qtd_docentes].qtd_orientacoes_graduacao = 0;
-    d[*qtd_docentes].qtd_orientacoes_pos_graduacao = 0;
-
-    *qtd_docentes += 1;
 }
 
-void mostra_docentes(Docente *doc,int *qtd_docentes){
-        int i;
-        printf("\nDoscentes disponiveis:\n");
-        for(i = 0; i < *qtd_docentes; i++){
-            printf("Id do docente: %d, Nome do docente: %s\n",doc[i].info_docente.ID,doc[i].info_docente.nome);
-        }
-        printf("\n");
+ListaDiscente *cadastrar_discente(ListaDiscente *l){
+
+	ListaDiscente *novo = (ListaDiscente *)malloc( sizeof(ListaDiscente) ),
+				  *aux = NULL;
+
+	novo->discente = criar_discente();
+	novo->prox = NULL;
+
+	if( l == NULL )
+		return novo;
+	else{
+
+		aux = l;
+		while( aux->prox )
+			aux = aux->prox;
+
+		aux->prox = novo;
+
+	}
+
+	return l;
+
 }
 
-int _orientador_existe(int num_orientador, Docente *doc, int *qtd_docentes)
-{
-    printf("Entrou no existe docente\n");
-        int i;
-        int flag = 0;
-        for(i = 0; i < *qtd_docentes + 1; i++){
-            if(doc[i].info_docente.ID == doc[num_orientador].info_docente.ID)
-            {
-                flag = 1;
-            }
-        }
-        return flag;
+Discente *buscar_discente( ListaDiscente *l, int id ){
+
+	while( l ){
+
+		if( l->discente->info_discente.ID == id )
+			return l->discente;
+
+		l = l->prox;
+
+	}
+
+	return NULL;
+
 }
 
-void cadastrar_discente(Discente *d, Docente *doc, int *qtd_discentes, int *qtd_docentes, int *qtd_pessoas, char *nome, int idade, int nivel, char *nome_curso, int senha)
-{
-    
-    int num_orientador = 0, num_Coorientador = 0;
-    
-    d = (Discente *)realloc(d, ( (*qtd_discentes) + 1 ) * sizeof(Discente));
-    
-    d[*qtd_discentes].info_discente.nome = copia_string( nome );
-    d[*qtd_discentes].info_discente.idade = idade;
-    d[*qtd_discentes].info_discente.ID =  *qtd_pessoas;
-    d[*qtd_discentes].info_discente.matricula =  *qtd_discentes;
-    d[*qtd_discentes].nivel = nivel;
-    d[*qtd_discentes].nome_curso = copia_string( nome_curso );
-    d[*qtd_discentes].senha = senha;
-    
-    *qtd_discentes += 1;
-    
-    while(1)
-    {
-        mostra_docentes(doc,qtd_docentes);
-        printf("Informe o ID do seu Orientador(0 = sem orientador):\n");
-        scanf("%d", &num_orientador);
-        if(num_orientador == 0)
-        {
-            break;
-        }
-        if(_orientador_existe(num_orientador,doc,qtd_docentes))//orientador existe 
-        {
-            d[*qtd_discentes - 1].ID_orientador = num_orientador;
-            break;
-        }else
-        {
-            printf("Numero de orientador Invalido!!!\n");
-        }
-    }
-    while(1)
-    {
-        mostra_docentes(doc,qtd_docentes);
-        printf("Informe o ID do seu Coorientador (0 = sem coorientador):\n");
-        scanf("%d", &num_Coorientador);
-        if(num_orientador == 0)
-        {
-            break;
-        }
-        if(_orientador_existe(num_Coorientador,doc,qtd_docentes)&&num_Coorientador != num_orientador)//orientador existe 
-        {
-            d[*qtd_discentes - 1].ID_coorientador = num_Coorientador;
-            break;
-        }else
-        {
-            printf("Numero de Coorientador Invalido!!!\n");
-        }
-    }
-    
+ListaDiscente *remover_discente( ListaDiscente *l, int id ){
+
+	ListaDiscente *aux, *aux2;
+
+	if( l == NULL )
+		return l;
+	if( l->discente->info_discente.ID == id )
+		return l->prox;
+
+	aux = l;
+	while( aux->prox ){
+		if( aux->prox->discente->info_discente.ID == id ){
+			aux2 = aux->prox;
+			aux->prox = aux->prox->prox;
+			liberar_discente( aux2->discente );	
+			free( aux2 );
+			break;
+		}
+
+		aux = aux->prox;
+
+	}
+
+	return l;
+
 }
 
+void mostrar_listaDiscente( ListaDiscente *l ){
 
-void _mostrar_teste_docente(Docente *d)
-{
-    //nome
-    printf("nome: %s\n",d[0].info_docente.nome);
-    
-    //idade
-    printf("Idade: %d\n",d[0].info_docente.idade);
-    
-    //ID
-    printf("ID: %d\n",d[0].info_docente.ID);
-    
-    //matricula
-    printf("Matricula: %d\n",d[0].info_docente.matricula);
-    
-    //qtd_orientacoes_graduacao
-    printf("Quantidade de orientados da graduacao: %d\n",d[0].qtd_orientacoes_graduacao);
+	if( l == NULL )
+		printf("Lista vazia\n");
+	else{
 
-    //qnt_orientacoes_pos_graduacao
-    printf("Quantidade de orientados da pos: %d\n",d[0].qtd_orientacoes_pos_graduacao);
-    
+		while( l->prox ){
+			mostrar_discente( l->discente );
+			l = l->prox;
+		}
+		mostrar_discente( l->discente );
+
+	}
+
 }
 
-void _mostrar_teste_discente(Discente *d)
-{
-    //nome
-    printf("nome: %s\n",d[0].info_discente.nome);
-    
-    //idade
-    printf("Idade: %d\n",d[0].info_discente.idade);
-    
-    //ID
-    printf("ID: %d\n",d[0].info_discente.ID);
-    
-    //matricula
-    printf("Matricula: %d\n",d[0].info_discente.matricula);
-    
-    //nivel
-    printf("Nivel do discente: %d\n",d[0].nivel);
+void liberar_listaDiscente( ListaDiscente *l ){
 
-    //nome_curso
-    printf("Nome do curso do discente: %s\n",d[0].nome_curso);
+	ListaDiscente *aux;
 
-    //senha
-    printf("Senha do discente: %d\n",d[0].senha);
+	while(l){
 
-    //ID_orientador
-    printf("Id do orientador do discente: %d\n",d[0].ID_orientador);
+		aux = l->prox;
+		liberar_discente( l->discente );	
+		free(l);
+		l = aux;
 
-    //ID_coorientador
-    printf("Id do Coorientador do discente: %d\n",d[0].ID_coorientador);
+	}
 
-    
 }
 
 
-//remover, 
-//altarar, 
-//buscar e 
-//mostrar 
-// mostar_docente
-// mostrar_discente
+//FUNÇÕES ADICIONAIS
+void alunos_de_um_orientador( ListaDiscente *l, int id_orientador ){
 
+	while( l ){
 
-//listar alunos de um determinado orientador; 
-//listar alunos que não possuem orientador; 
-//mudar orientador de um determinado aluno
+		if( l->discente->ID_orientador == id_orientador )
+			mostrar_discente( l->discente );
 
+		l = l->prox;
+
+	}
+
+}
+
+void alunos_sem_orientador( ListaDiscente *l ){
+
+	while( l ){
+
+		if( l->discente->ID_orientador == -1 )
+			mostrar_discente( l->discente );
+
+		l = l->prox;
+
+	}
+
+}
+
+void mudar_orientador_de_um_aluno( ListaDocente *ldo, Discente *d, int id_orientador_novo ){
+
+	Docente *doc = buscar_docente( ldo, id_orientador_novo );
+	int flag = 0;
+
+	//SE ENCONTRAR O DOCENTE E SE ALUNO JA TIVER UM ORIENTADOR
+	if( doc && d->ID_orientador != -1 ){
+
+		//VERIFICANDO O NIVEL E SE O ORIENTADOR TEM VAGA SOBRANDO
+		if( d->nivel == 1 && doc->qtd_orientacoes_graduacao < 4 ){
+			doc->qtd_orientacoes_graduacao += 1;
+			flag = 1;
+		}else if( d->nivel == 2 && doc->qtd_orientacoes_pos_graduacao < 6 ){
+			doc->qtd_orientacoes_pos_graduacao += 1;
+			flag = 1;
+		}
+		
+		if( flag ){
+
+			if( d->ID_orientador != -1 ){
+
+				doc = buscar_docente( ldo, d->ID_orientador );
+
+				if( d->nivel == 1 )
+					doc->qtd_orientacoes_graduacao -= 1;
+				else if( d->nivel == 2 )
+					doc->qtd_orientacoes_pos_graduacao -= 1;
+
+			}
+
+			d->ID_orientador = id_orientador_novo;
+
+		}
+
+	}
+
+}
+
+int menu( ListaDocente **ldo, ListaDiscente **ldi ){
+
+	int op, id;
+	Docente *doc = NULL;
+	Discente *dis = NULL;
+
+	printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
+	printf("1 - Docente\n");
+	printf("2 - Discente\n");
+	printf("3 - Cadastrar orientando\n");
+	printf("4 - Alunos de um determinado orientador\n");
+	printf("5 - Alunos que nao possuem orientador\n");
+	printf("6 - Mudar orientador de um aluno\n");
+	printf("7 - Sair\n");
+	printf("\n");
+	printf("Opcao: "); scanf("%d", &op);
+	printf("\n\n");
+
+	if( op == 1 ){
+
+		printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
+		printf("1 - Cadastrar docente\n");
+		printf("2 - Remover docente\n");
+		printf("3 - Mostrar docentes\n");
+		printf("\n");
+		printf("Opcao: "); scanf("%d", &op);
+		printf("\n\n");
+
+		if( op == 1 ){
+
+			*ldo = cadastrar_docente( *ldo );
+
+			printf("\n");
+
+		}else if( op == 2 ){
+
+			printf("Id do docente: "); scanf("%d", &id);
+
+			*ldo = remover_docente( *ldo, id );
+
+			printf("\n");
+
+		}else if( op == 3 ){
+
+			mostrar_listaDocente( *ldo );
+
+		}
+
+	}else if( op == 2 ){
+
+		printf("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\n");
+		printf("1 - Cadastrar discente\n");
+		printf("2 - Remover discente\n");
+		printf("3 - Mostrar discentes\n");
+		printf("\n");
+		printf("Opcao: "); scanf("%d", &op);
+		printf("\n\n");
+
+		if( op == 1 ){
+
+			*ldi = cadastrar_discente( *ldi );
+
+			printf("\n");
+
+		}else if( op == 2 ){
+
+			printf("Id do discente: "); scanf("%d", &id);
+
+			dis = buscar_discente( *ldi, id );
+
+			if( dis ){
+				doc = buscar_docente( *ldo, dis->ID_orientador );
+
+				if( doc ){
+
+					if( dis->nivel == 1 )
+						doc->qtd_orientacoes_graduacao -= 1;
+					else if( dis->nivel == 2 )
+						doc->qtd_orientacoes_pos_graduacao -= 1;
+				}	
+
+			}
+
+			*ldi = remover_discente( *ldi, id );
+
+			printf("\n");
+
+		}else if( op == 3 ){
+
+			mostrar_listaDiscente( *ldi );
+
+		}
+
+	}else if( op == 3 ){
+
+		printf("Id do discente: "); scanf("%d", &id);
+
+		dis = buscar_discente( *ldi, id );
+
+		printf("Id do docente: "); scanf("%d", &id);
+
+		doc = buscar_docente( *ldo, id );
+
+		if( dis && doc ){
+
+			if( dis->ID_orientador == -1 ){
+
+				if( dis->nivel == 1 && doc->qtd_orientacoes_graduacao < 4){
+
+					dis->ID_orientador = doc->info_docente.ID;
+					doc->qtd_orientacoes_graduacao += 1;
+
+				}else if( dis->nivel == 2 && doc->qtd_orientacoes_pos_graduacao < 6){
+
+					dis->ID_orientador = doc->info_docente.ID;
+					doc->qtd_orientacoes_pos_graduacao += 1;
+
+				}
+
+			}
+
+		}
+
+	}else if( op == 4 ){
+
+		printf("Id do orientador: "); scanf("%d", &id);
+
+		alunos_de_um_orientador(*ldi, id);
+
+	}else if( op == 5 ){
+
+		alunos_sem_orientador(*ldi);
+
+	}else if( op == 6 ){
+
+		printf("Id do discente: "); scanf("%d", &id);
+
+		dis = buscar_discente( *ldi, id );
+
+		printf("Id do novo orientador: "); scanf("%d", &id);
+
+		mudar_orientador_de_um_aluno( *ldo, dis, id );
+
+	}else if( op == 7 )
+		return 0;
+
+	return 1;
+
+}
