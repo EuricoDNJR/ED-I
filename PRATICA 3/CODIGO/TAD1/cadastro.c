@@ -264,14 +264,11 @@ ListaDocente *remover_docente( ListaDocente *l, int id ){
 void mostrar_listaDocente( ListaDocente *l ){
 
 	if( l == NULL )
-		printf("Lista vazia\n");
+		return ;
 	else{
 
-		while( l->prox ){
-			mostrar_docente( l->docente );
-			l = l->prox;
-		}
 		mostrar_docente( l->docente );
+		mostrar_listaDocente( l->prox );
 
 	}
 
@@ -279,16 +276,14 @@ void mostrar_listaDocente( ListaDocente *l ){
 
 void liberar_listaDocente( ListaDocente *l ){
 
-	ListaDocente *aux;
+	if( l == NULL )
+		return ;
 
-	while(l){
 
-		aux = l->prox;
-		liberar_docente( l->docente );	
-		free(l);
-		l = aux;
+	liberar_listaDocente( l->prox );
 
-	}
+	liberar_docente( l->docente );	
+	free(l);
 
 }
 
@@ -369,14 +364,11 @@ ListaDiscente *remover_discente( ListaDiscente *l, int id ){
 void mostrar_listaDiscente( ListaDiscente *l ){
 
 	if( l == NULL )
-		printf("Lista vazia\n");
+		return;
 	else{
 
-		while( l->prox ){
-			mostrar_discente( l->discente );
-			l = l->prox;
-		}
 		mostrar_discente( l->discente );
+		mostrar_listaDiscente(l->prox);
 
 	}
 
@@ -384,16 +376,14 @@ void mostrar_listaDiscente( ListaDiscente *l ){
 
 void liberar_listaDiscente( ListaDiscente *l ){
 
-	ListaDiscente *aux;
+	if( l == NULL )
+		return ;
 
-	while(l){
 
-		aux = l->prox;
-		liberar_discente( l->discente );	
-		free(l);
-		l = aux;
+	liberar_listaDiscente( l->prox );
 
-	}
+	liberar_discente( l->discente );	
+	free(l);
 
 }
 

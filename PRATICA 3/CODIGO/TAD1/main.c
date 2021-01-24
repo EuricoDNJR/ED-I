@@ -12,4 +12,7 @@ int main(){
 
 	while( menu(&ldo, &ldi) );
 
+	liberar_listaDocente(ldo);
+	liberar_listaDiscente(ldi);
+
 }
