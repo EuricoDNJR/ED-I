@@ -3,8 +3,7 @@
 #include "cadastro.h"
 
 
-int id_docente = 0,
-	id_discente = 0;
+int id_pessoa = 0;
 
 
 //STRUCTS
@@ -63,15 +62,17 @@ char *ler_string(){
 
 
 //PESSOA
-void criar_pessoa( Pessoa *p, int id ){
+void criar_pessoa( Pessoa *p ){
 
 	setbuf( stdin, NULL );
+
+	id_pessoa++;
 
 	printf("Nome: ");
 	p->nome = ler_string();
 	printf("Idade "); scanf("%d", &p->idade);
-	p->ID = id;
-	p->matricula = ( id * 10 ) + ( rand() % 10 );
+	p->ID = id_pessoa;
+	p->matricula = ( id_pessoa * 10 ) + ( rand() % 10 );
 
 }
 
@@ -96,9 +97,7 @@ Docente *criar_docente(){
 
 	Docente *d = (Docente *)malloc( sizeof(Docente) );
 
-	id_docente++;
-
-	criar_pessoa( &d->info_docente, id_docente );
+	criar_pessoa( &d->info_docente );
 	d->qtd_orientacoes_graduacao = 0;
 	d->qtd_orientacoes_pos_graduacao = 0;
 
@@ -135,9 +134,7 @@ Discente *criar_discente(){
 
 	Discente *d = (Discente *)malloc( sizeof(Discente) );
 
-	id_discente++;
-
-	criar_pessoa( &d->info_discente, id_discente );
+	criar_pessoa( &d->info_discente );
 	printf("Nivel: "); scanf("%d", &d->nivel);
 
 	setbuf( stdin, NULL );
@@ -420,32 +417,36 @@ void mudar_orientador_de_um_aluno( ListaDocente *ldo, Discente *d, int id_orient
 	Docente *doc = buscar_docente( ldo, id_orientador_novo );
 	int flag = 0;
 
-	//SE ENCONTRAR O DOCENTE E SE ALUNO JA TIVER UM ORIENTADOR
-	if( doc && d->ID_orientador != -1 ){
+	if( d ){
 
-		//VERIFICANDO O NIVEL E SE O ORIENTADOR TEM VAGA SOBRANDO
-		if( d->nivel == 1 && doc->qtd_orientacoes_graduacao < 4 ){
-			doc->qtd_orientacoes_graduacao += 1;
-			flag = 1;
-		}else if( d->nivel == 2 && doc->qtd_orientacoes_pos_graduacao < 6 ){
-			doc->qtd_orientacoes_pos_graduacao += 1;
-			flag = 1;
-		}
-		
-		if( flag ){
+		//SE ENCONTRAR O DOCENTE E SE ALUNO JA TIVER UM ORIENTADOR
+		if( doc && d->ID_orientador != -1 ){
 
-			if( d->ID_orientador != -1 ){
+			//VERIFICANDO O NIVEL E SE O ORIENTADOR TEM VAGA SOBRANDO
+			if( d->nivel == 1 && doc->qtd_orientacoes_graduacao < 4 ){
+				doc->qtd_orientacoes_graduacao += 1;
+				flag = 1;
+			}else if( d->nivel == 2 && doc->qtd_orientacoes_pos_graduacao < 6 ){
+				doc->qtd_orientacoes_pos_graduacao += 1;
+				flag = 1;
+			}
+			
+			if( flag ){
 
-				doc = buscar_docente( ldo, d->ID_orientador );
+				if( d->ID_orientador != -1 ){
 
-				if( d->nivel == 1 )
-					doc->qtd_orientacoes_graduacao -= 1;
-				else if( d->nivel == 2 )
-					doc->qtd_orientacoes_pos_graduacao -= 1;
+					doc = buscar_docente( ldo, d->ID_orientador );
+
+					if( d->nivel == 1 )
+						doc->qtd_orientacoes_graduacao -= 1;
+					else if( d->nivel == 2 )
+						doc->qtd_orientacoes_pos_graduacao -= 1;
+
+				}
+
+				d->ID_orientador = id_orientador_novo;
 
 			}
-
-			d->ID_orientador = id_orientador_novo;
 
 		}
 
@@ -453,9 +454,10 @@ void mudar_orientador_de_um_aluno( ListaDocente *ldo, Discente *d, int id_orient
 
 }
 
-int menu( ListaDocente **ldo, ListaDiscente **ldi ){
+void menu_cadastro( ListaDocente **ldo, ListaDiscente **ldi ){
 
 	int op, id;
+	char aux;
 	Docente *doc = NULL;
 	Discente *dis = NULL;
 
@@ -463,10 +465,10 @@ int menu( ListaDocente **ldo, ListaDiscente **ldi ){
 	printf("1 - Docente\n");
 	printf("2 - Discente\n");
 	printf("3 - Cadastrar orientando\n");
-	printf("4 - Alunos de um determinado orientador\n");
-	printf("5 - Alunos que nao possuem orientador\n");
-	printf("6 - Mudar orientador de um aluno\n");
-	printf("7 - Sair\n");
+	printf("4 - Remover orientando\n");
+	printf("5 - Alunos de um determinado orientador\n");
+	printf("6 - Alunos que nao possuem orientador\n");
+	printf("7 - Mudar orientador de um aluno\n");
 	printf("\n");
 	printf("Opcao: "); scanf("%d", &op);
 	printf("\n\n");
@@ -572,21 +574,82 @@ int menu( ListaDocente **ldo, ListaDiscente **ldi ){
 
 				}
 
+			}else if( dis->ID_coorientador == -1 ){
+
+				printf("Aluno ja tem orientador, deseja cadastrar docente como coorientador?\nresposta(sim ou nao): "); scanf("%c", &aux);
+
+				setbuf(stdin, NULL); //PRECAUÇÃO
+
+				if(aux == 's' || aux == 'S'){
+
+					if( dis->nivel == 1 && doc->qtd_orientacoes_graduacao < 4){
+
+						dis->ID_coorientador = doc->info_docente.ID;
+						doc->qtd_orientacoes_graduacao += 1;
+
+					}else if( dis->nivel == 2 && doc->qtd_orientacoes_pos_graduacao < 6){
+
+						dis->ID_coorientador = doc->info_docente.ID;
+						doc->qtd_orientacoes_pos_graduacao += 1;
+
+					}
+
+				}
+
 			}
 
 		}
 
 	}else if( op == 4 ){
 
+		printf("Id do discente: "); scanf("%d", &id);
+
+		dis = buscar_discente( *ldi, id );
+
+		//ENCONTROU DISCENTE
+		if( dis ){
+
+			//SE TIVER ORIENTADOR
+			if(dis->ID_orientador != -1){
+
+				doc = buscar_docente( *ldo, dis->ID_orientador );
+
+				if( dis->nivel == 1 )
+					doc->qtd_orientacoes_graduacao--;
+				if( dis->nivel == 2 )
+					doc->qtd_orientacoes_pos_graduacao--;
+
+				dis->ID_orientador = -1;
+
+			}
+
+			//SE TIVER COORIENTADOR
+			if(dis->ID_orientador != -1){
+
+				doc = buscar_docente( *ldo, dis->ID_coorientador );
+
+				if( dis->nivel == 1 )
+					doc->qtd_orientacoes_graduacao--;
+				if( dis->nivel == 2 )
+					doc->qtd_orientacoes_pos_graduacao--;
+
+				dis->ID_coorientador = -1;
+
+			}
+
+		}
+
+	}else if( op == 5 ){
+
 		printf("Id do orientador: "); scanf("%d", &id);
 
 		alunos_de_um_orientador(*ldi, id);
 
-	}else if( op == 5 ){
+	}else if( op == 6 ){
 
 		alunos_sem_orientador(*ldi);
 
-	}else if( op == 6 ){
+	}else if( op == 7 ){
 
 		printf("Id do discente: "); scanf("%d", &id);
 
@@ -596,9 +659,37 @@ int menu( ListaDocente **ldo, ListaDiscente **ldi ){
 
 		mudar_orientador_de_um_aluno( *ldo, dis, id );
 
-	}else if( op == 7 )
-		return 0;
+	}
+	
+	printf("\n");
 
-	return 1;
+}
+
+int login( ListaDocente *ldo, ListaDiscente *ldi ){
+
+
+	int id, senha;
+	Discente *dis = NULL;
+	Docente *doc = NULL;
+
+	printf("Id da pessoa(Discente ou Docente): "); scanf("%d", &id);
+
+	doc = buscar_docente(ldo, id);
+	if( doc )
+		return 1;
+
+	dis = buscar_discente(ldi, id);
+	if( dis ){
+
+		if( dis->ID_orientador != -1 ){
+			printf("senha: "); scanf("%d", &senha);
+
+			if(dis->senha == senha)
+				return 1;
+		}
+
+	}
+
+	return 0;
 
 }

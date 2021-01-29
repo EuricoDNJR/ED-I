@@ -11,7 +11,7 @@ typedef	struct listaDiscente ListaDiscente;
 char *ler_string();
 
 //PESSOA
-void criar_pessoa( Pessoa *p, int id );
+void criar_pessoa( Pessoa *p );
 void mostrar_pessoa( Pessoa p );
 void liberar_pessoa( Pessoa *p );
 
@@ -46,7 +46,8 @@ void liberar_listaDiscente( ListaDiscente *l );
 void alunos_de_um_orientador( ListaDiscente *l, int id_orientador );
 void alunos_sem_orientador( ListaDiscente *l );
 void mudar_orientador_de_um_aluno( ListaDocente *ldo, Discente *d, int id_orientador_novo );
-int menu( ListaDocente **ldo, ListaDiscente **ldi );
+void menu_cadastro( ListaDocente **ldo, ListaDiscente **ldi );
+int login( ListaDocente *ldo, ListaDiscente *ldi );
 
  
 #endif

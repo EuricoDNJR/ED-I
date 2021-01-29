@@ -1,3 +1,4 @@
+
 #include<stdio.h>
 #include<stdlib.h>
 
@@ -62,9 +63,13 @@ void Cadastrar_Container(Pil_Cont *pilha,int tamanho,int perecivel,int corrosivo
 
 }
 
-_Bool _pilhaVazia(Pil_Cont *pilha)
+int _pilhaVazia(Pil_Cont *pilha)
 {
-        return pilha->topo == NULL;
+    if (pilha->topo == NULL)
+        return 1;
+
+     return 0;
+    
 }
 
 void _mostrar_container(Container *c)
@@ -90,7 +95,8 @@ void _mostrar_container(Container *c)
         printf("Conteiner com produtos CORROZIVOS!\n");
     }else
     {
-        printf("Conteiner com produtos PERECIVEIS!\n");
+        if(c->perecivel==1)
+            printf("Conteiner com produtos PERECIVEIS!\n");
     }
 
 }
@@ -129,4 +135,15 @@ Container* Remover_Pilha(Pil_Cont *pilha)
     free(aux);
     return valor;
 
+}
+
+void pilha_libera (Pil_Cont* p_c){
+    Lis_Cont* q = p_c->topo, *t;
+    while (q!=NULL) {
+        t = q->prox;
+        free(q->info);
+        free(q);
+        q = t;
+    }
+    free(p_c);
 }
